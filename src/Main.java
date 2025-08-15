@@ -23,7 +23,8 @@ public class Main {
             System.out.println("6. Filtrar por status");
             System.out.println("7. Filtrar por categoria");
             System.out.println("8. Filtrar por prazo");
-            System.out.println("9. Sair");
+            System.out.println("9. Configurar Alarmes");
+            System.out.println("0. Sair");
             System.out.print("Escolha: ");
             int opc = Integer.parseInt(scanner.nextLine());
             switch (opc) {
@@ -85,6 +86,9 @@ public class Main {
                     controladorTarefa.filtrarPorPrazo(LocalDate.parse(scanner.nextLine()));
                 }
                 case 9 -> {
+                    controladorTarefa.configurarAlarmes();
+                }
+                case 0 -> {
                     System.out.println("Saindo...");
                     return;
                 }

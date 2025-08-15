@@ -24,6 +24,7 @@ bin/
 
 ### VS Code ###
 .vscode/
+src/serviços/SendGridConfig.java
 
 ### Mac OS ###
 .DS_Store
