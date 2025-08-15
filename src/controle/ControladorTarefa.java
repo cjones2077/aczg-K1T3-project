@@ -1,6 +1,8 @@
 package controle;
 
+import entidade.Alarme;
 import entidade.Tarefa;
+import serviços.ServiçoEmail;
 import visão.VisãoTarefa;
 import entidade.Tarefa.Status;
 import java.io.*;
@@ -9,11 +11,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ControladorTarefa {
     private ArrayList<Tarefa> listaTarefas = new ArrayList<>();
     private final String caminho_arquivo = "tarefas.txt";
     private VisãoTarefa visãoTarefa;
+    private final ServiçoEmail serviçoEmail = new ServiçoEmail();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final List<Alarme> regrasNotificacao = new ArrayList<>();
+    private String emailDestino = "";
 
     public ControladorTarefa(VisãoTarefa visãoTarefa) {
         this.carregarTarefas();
@@ -111,5 +120,54 @@ public class ControladorTarefa {
         } catch (FileNotFoundException e) {
             System.out.println("O arquivo não foi encontrado.");
         }
+    }
+
+    public void configurarAlarmes() {
+        Scanner scanner = new Scanner(System.in);
+        String resposta = "";
+
+        do {
+            if (emailDestino.isEmpty()){
+                System.out.print("Digite seu email: ");
+                emailDestino = scanner.nextLine();
+            }
+            System.out.print("Quantos dias antes do prazo deseja ser notificado? ");
+            int dias = Integer.parseInt(scanner.nextLine());
+
+            System.out.print("Deseja filtrar por status? (TODO/DOING/DONE ou vazio para ignorar): ");
+            String statusStr = scanner.nextLine().trim().toUpperCase();
+            Tarefa.Status statusFiltro = statusStr.isEmpty() ? null : Tarefa.Status.valueOf(statusStr);
+
+            System.out.print("Deseja filtrar por prioridade mínima? (ou vazio para ignorar): ");
+            String prioridadeStr = scanner.nextLine().trim();
+            Integer prioridadeMinima = prioridadeStr.isEmpty() ? null : Integer.parseInt(prioridadeStr);
+
+            regrasNotificacao.add(new Alarme(dias, statusFiltro, prioridadeMinima));
+
+            System.out.print("Deseja adicionar outro gatilho? (s/n): ");
+            resposta = scanner.nextLine().trim().toLowerCase();
+        } while (resposta.equals("s"));
+
+        if (!regrasNotificacao.isEmpty()) {
+            iniciarScheduler();
+        }
+    }
+
+    private void iniciarScheduler() {
+        scheduler.scheduleAtFixedRate(() -> {
+            LocalDate hoje = LocalDate.now();
+
+            for (Tarefa t : listaTarefas) {
+                for (Alarme regra : regrasNotificacao) {
+                    if (regra.deveNotificar(t, hoje)) {
+                        String assunto = "Lembrete de tarefa " + t.getNome();
+                        String corpo = "Sua tarefa " + t.getNome() + "\nCom Status: " + t.getStatus() +
+                                "\ne com Prioridade: " + t.getPrioridade() + 
+                                "Expira no dia " + t.getDataDeTermino();
+                        serviçoEmail.enviarEmail(emailDestino, assunto, corpo);
+                    }
+                }
+            }
+        }, 0, 1, TimeUnit.DAYS);
     }
 }
