@@ -21,10 +21,6 @@ public class ServiçoEmail {
             request.setBody(mail.build());
 
             Response response = sg.api(request);
-
-            System.out.println("Status: " + response.getStatusCode());
-            System.out.println("Corpo: " + response.getBody());
-            System.out.println("Headers: " + response.getHeaders());
         }
         catch (IOException e) {
             throw new RuntimeException(e);
