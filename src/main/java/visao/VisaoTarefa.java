@@ -1,10 +1,10 @@
-package visão;
+package visao;
 
 import entidade.Tarefa;
 
 import java.util.List;
 
-public class VisãoTarefa {
+public class VisaoTarefa {
     public void mostrarTarefas(List<Tarefa> tarefas) {
         if (tarefas.isEmpty()) {
             System.out.println("Nenhuma tarefa encontrada.");

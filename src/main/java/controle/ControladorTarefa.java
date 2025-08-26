@@ -3,7 +3,7 @@ package controle;
 import entidade.Alarme;
 import entidade.Tarefa;
 import serviços.ServiçoEmail;
-import visão.VisãoTarefa;
+import visao.VisaoTarefa;
 import entidade.Tarefa.Status;
 import java.io.*;
 import java.time.LocalDate;
@@ -18,14 +18,19 @@ import java.util.concurrent.TimeUnit;
 public class ControladorTarefa {
     private ArrayList<Tarefa> listaTarefas = new ArrayList<>();
     private final String caminho_arquivo = "tarefas.txt";
-    private VisãoTarefa visãoTarefa;
+    private VisaoTarefa visãoTarefa;
     private final ServiçoEmail serviçoEmail = new ServiçoEmail();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final List<Alarme> regrasNotificacao = new ArrayList<>();
     private String emailDestino = "";
 
-    public ControladorTarefa(VisãoTarefa visãoTarefa) {
-        this.carregarTarefas();
+    public ArrayList<Tarefa> getListaTarefas() {
+        return listaTarefas;
+    }
+
+    public ControladorTarefa(VisaoTarefa visãoTarefa, boolean carregarArquivo) {
+        if (carregarArquivo)
+            this.carregarTarefas();
         this.visãoTarefa = visãoTarefa;
     }
 
@@ -34,6 +39,26 @@ public class ControladorTarefa {
         salvarTarefas();
         System.out.println("Tarefa adicionada com sucesso!");
     }
+
+
+    public void editarTarefa(int index, String novoTitulo, String novaDescricao,
+    int novaPrioridade, String novaCategoria, LocalDate novoPrazo) {
+        if (index >= 0 && index < listaTarefas.size()) {
+            Tarefa tarefa = listaTarefas.get(index);
+
+            tarefa.setNome(novoTitulo);
+            tarefa.setDescricao(novaDescricao);
+            tarefa.setPrioridade(novaPrioridade);
+            tarefa.setCategoria(novaCategoria);
+            tarefa.setDataDeTermino(novoPrazo);
+
+            salvarTarefas();
+            System.out.println("Tarefa editada com sucesso!");
+        } else {
+            System.out.println("Índice inválido.");
+        }
+    }
+
 
     public void listarTarefas() {
         visãoTarefa.mostrarTarefas(listaTarefas);

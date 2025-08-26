@@ -1,6 +1,6 @@
 import controle.ControladorTarefa;
 import entidade.Tarefa;
-import visão.VisãoTarefa;
+import visao.VisaoTarefa;
 //import view.TarefaView;
 import entidade.Tarefa.Status;
 import java.time.LocalDate;
@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        VisãoTarefa visãoTarefa = new VisãoTarefa();
-        ControladorTarefa controladorTarefa = new ControladorTarefa(visãoTarefa);
+        VisaoTarefa visaoTarefa = new VisaoTarefa();
+        ControladorTarefa controladorTarefa = new ControladorTarefa(visaoTarefa, true);
 
         while (true) {
             System.out.println("\n=== MENU ===");
@@ -24,6 +24,7 @@ public class Main {
             System.out.println("7. Filtrar por categoria");
             System.out.println("8. Filtrar por prazo");
             System.out.println("9. Configurar Alarmes");
+            System.out.println("10. Editar Tarefa");
             System.out.println("0. Sair");
             System.out.print("Escolha: ");
             int opc = Integer.parseInt(scanner.nextLine());
@@ -88,8 +89,48 @@ public class Main {
                 case 9 -> {
                     controladorTarefa.configurarAlarmes();
                 }
+                case 10 -> {
+                    controladorTarefa.listarTarefas();
+                    System.out.print("Número da tarefa para editar: ");
+                    int idx = Integer.parseInt(scanner.nextLine()) - 1;
+                    if (idx < 0 || idx >= controladorTarefa.getListaTarefas().size()) {
+                        System.out.println("Índice inválido!");
+                        break;
+                    Tarefa tarefa = controladorTarefa.getListaTarefas().get(idx);
+
+                    System.out.print("Novo título (deixe vazio para não alterar): ");
+                    String novoTitulo = scanner.nextLine();
+                    if (novoTitulo.isEmpty()) novoTitulo = tarefa.getNome();
+
+                    System.out.print("Nova descrição (deixe vazio para não alterar): ");
+                    String novaDescricao = scanner.nextLine();
+                    if (novaDescricao.isEmpty()) novaDescricao = tarefa.getDescricao();
+
+                    System.out.print("Nova prioridade (1-5, deixe vazio para não alterar): ");
+                    String prioridadeStr = scanner.nextLine();
+                    int novaPrioridade = prioridadeStr.isEmpty() ? tarefa.getPrioridade() : Integer.parseInt(prioridadeStr);
+
+                    System.out.print("Nova categoria (deixe vazio para não alterar): ");
+                    String novaCategoria = scanner.nextLine();
+                    if (novaCategoria.isEmpty()) novaCategoria = tarefa.getCategoria();
+
+                    System.out.print("Novo prazo (YYYY-MM-DD, deixe vazio para não alterar): ");
+                    String prazoStr = scanner.nextLine();
+                    LocalDate novoPrazo;
+                    if (prazoStr.isEmpty()) {
+                        novoPrazo = tarefa.getDataDeTermino();
+                    } else {
+                        try {
+                            novoPrazo = LocalDate.parse(prazoStr);
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Formato de data inválido! Mantendo prazo antigo.");
+                            novoPrazo = tarefa.getDataDeTermino();
+                        }
+                    }
+
+                    controladorTarefa.editarTarefa(idx, novoTitulo, novaDescricao, novaPrioridade, novaCategoria, novoPrazo);
+                }
                 case 0 -> {
-                    System.out.println("Saindo...");
                     return;
                 }
                 default -> System.out.println("Opção inválida!");
