@@ -96,6 +96,7 @@ public class Main {
                     if (idx < 0 || idx >= controladorTarefa.getListaTarefas().size()) {
                         System.out.println("Índice inválido!");
                         break;
+                    }
                     Tarefa tarefa = controladorTarefa.getListaTarefas().get(idx);
 
                     System.out.print("Novo título (deixe vazio para não alterar): ");
