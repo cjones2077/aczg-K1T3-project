@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO List</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>Lista de Tarefas</h1>
+        <button id="botao_adicionar">Adicionar Tarefa</button>
+      </header>
+
+      <dialog id="modal_dialog">
+        <span id="fechar_modal" class="close">&times;</span>
+        <h2 id="titulo_modal">Cadastrar Tarefa</h2>
+        <form>
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" required />
+
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" name="descricao" required></textarea>
+
+          <label for="prioridade">Prioridade</label>
+          <input
+            type="number"
+            id="prioridade"
+            name="prioridade"
+            min="1"
+            max="5"
+            required
+          />
+
+          <label for="data_de_termino">Data de Término</label>
+          <input
+            type="date"
+            id="data_de_termino"
+            name="data_de_termino"
+            required
+          />
+
+          <label for="categoria">Categoria</label>
+          <input type="text" id="categoria" name="categoria" required />
+
+          <button type="submit">Criar</button>
+        </form>
+      </dialog>
+
+      <ul id="lista_de_tarefas">
+      </ul>
+    </div>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
